@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/task_view"
+        android:layout_width="match_parent"
+        android:layout_height="57dp"
+        android:clickable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        card_view:cardElevation="1.5dp"
+        card_view:cardCornerRadius="7dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="2dp">
+
+            <LinearLayout
+                android:layout_width="15dp"
+                android:layout_height="match_parent"
+                android:background="@color/black"
+                android:orientation="horizontal"
+                android:id="@+id/coloredPart">
+            </LinearLayout>
+
+        <RelativeLayout
+            android:layout_width="280dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:id="@+id/checkgroup"
+            android:layout_marginTop="7dp"
+            android:layout_marginLeft="15dp">
+
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/task_title"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="This is task"
+                    android:textSize="20sp"
+                    android:layout_marginLeft="45sp"
+                    android:textStyle="normal"
+                    android:textColor="@color/black"
+                    android:id="@+id/task_name"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/delete"
+                android:background="@color/transparent"
+                android:layout_marginTop="10dp"
+                android:clickable="true"/>
+
+            <ImageButton
+                android:layout_width="40dp"
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="25sp"
+                android:id="@+id/edit"
+                android:background="@color/transparent"
+                android:layout_marginTop="10dp"
+                android:clickable="true"/>
+
+        </RelativeLayout>
+
+
+    </android.support.v7.widget.CardView>
+</FrameLayout>
