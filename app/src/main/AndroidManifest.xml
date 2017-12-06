@@ -19,9 +19,5 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".AddNote"
-            android:theme="@style/note"
-            android:label="@string/add_note">
-        </activity>
     </application>
 </manifest>

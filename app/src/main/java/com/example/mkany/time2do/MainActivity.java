@@ -37,7 +37,6 @@ import com.example.mkany.time2do.DataBase.TaskDBHelper;
 import com.podcopic.animationlib.library.AnimationType;
 import com.podcopic.animationlib.library.StartSmartAnimation;
 import com.podcopic.animationlib.library.sliders.SlideInLeft;
-import com.podcopic.animationlib.library.sliders.SlideInRight;
 import com.podcopic.animationlib.library.sliders.SlideInUp;
 
 import java.util.ArrayList;
@@ -46,8 +45,7 @@ import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity{
 
     public static TaskDBHelper taskDBHelper ;
     private EditText text;
@@ -94,18 +92,11 @@ public class MainActivity extends AppCompatActivity
         slideInLeftAnimator.setAddDuration(1000);
 //        runLayoutAnimation(doneRecyclerView);
 
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
         updateCheckedList();
         updateUI();
-//        final ImageView imageView3 = new ImageView(this);
-//        imageView3.setImageResource(R.drawable.rednote);
-//
-//        ImageView imageView2 = new ImageView(this);
-//        imageView2.setImageResource(R.drawable.cam2);
-//
-//        ImageView imageView1 = new ImageView(this);
-//        imageView1.setImageResource(R.drawable.record2);
 
         doneRecyclerView.setVisibility(View.VISIBLE);
         imageButton.setOnClickListener(new View.OnClickListener() {
@@ -148,8 +139,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-//                layout.setBackgroundColor(Color.BLACK);
-
                 final AlertDialog.Builder alartDialog = new AlertDialog.Builder(MainActivity.this);
                 View view = getLayoutInflater().inflate(R.layout.activity_note, null);
                 text = (EditText) view.findViewById(R.id.noteDescription);
@@ -177,146 +166,38 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
                 alartDialog.setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                String task = String.valueOf(text.getText());
-                                NoteData data = new NoteData();
-                                SQLiteDatabase database = taskDBHelper.getWritableDatabase();
-                                ContentValues values = new ContentValues();
-                                if(task.isEmpty())
-                                {
-                                    values.put(TaskContract.TaskEntry.COL_TASK_TITLE, "No title");
-                                    data.setTitle("No title");
-                                }
-                                else{
-                                    values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                                    data.setTitle(task);
-                                }
-                                data.setPriority(priority);
-                                data.setDone(0);
-                                values.put(TaskContract.TaskEntry.COL_TASK_Priority, priority);
-                                values.put(TaskContract.TaskEntry.COL_TASK_isDone, 0);
-                                database.insertWithOnConflict(TaskContract.TaskEntry.TABLE, null,
-                                        values, SQLiteDatabase.CONFLICT_REPLACE);
-                                database.close();
-//                                updateUI();
-                                adaptorTasks.add(context, data);
-                            }
-                        })
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String task = String.valueOf(text.getText());
+                        NoteData data = new NoteData();
+                        SQLiteDatabase database = taskDBHelper.getWritableDatabase();
+                        ContentValues values = new ContentValues();
+                        if(task.isEmpty())
+                        {
+                            values.put(TaskContract.TaskEntry.COL_TASK_TITLE, "No title");
+                            data.setTitle("No title");
+                        }
+                        else{
+                            values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+                            data.setTitle(task);
+                        }
+                        data.setPriority(priority);
+                        data.setDone(0);
+                        values.put(TaskContract.TaskEntry.COL_TASK_Priority, priority);
+                        values.put(TaskContract.TaskEntry.COL_TASK_isDone, 0);
+                        database.insertWithOnConflict(TaskContract.TaskEntry.TABLE, null,
+                                values, SQLiteDatabase.CONFLICT_REPLACE);
+                        database.close();
+                        adaptorTasks.add(context, data);
+                    }
+                })
                         .setNegativeButton("Cancel", null)
                         .create();
                 alartDialog.show();
 
             }
         });
-
-//        SubActionButton.Builder itemBuilder = new SubActionButton.Builder(this);
-//
-//        itemBuilder.setBackgroundDrawable(new ColorDrawable(getResources().getColor(R.color.transparent)));
-//
-//        SubActionButton noteButton = itemBuilder.setContentView(imageView3).build();
-//        SubActionButton imageButton = itemBuilder.setContentView(imageView2).build();
-//        SubActionButton recordButton = itemBuilder.setContentView(imageView1).build();
-//
-//        final FloatingActionMenu actionMenu = new FloatingActionMenu.Builder(this)
-//                .addSubActionView(recordButton)
-//                .addSubActionView(imageButton)
-//                .addSubActionView(noteButton)
-//                .attachTo(fab).build();
-//
-
-//        noteButton.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v)
-//            {
-//                actionMenu.close(true);
-//                Toast.makeText(getApplicationContext(), "Option1", Toast.LENGTH_SHORT).show();
-//
-////                Intent intent = new Intent(getApplicationContext(), AddNote.class);
-////                startActivityForResult(intent, 100);
-//                final AlertDialog.Builder alartDialog = new AlertDialog.Builder(MainActivity.this);
-//                View view = getLayoutInflater().inflate(R.layout.activity_note, null);
-//                text = (EditText) view.findViewById(R.id.noteDescription);
-//                alartDialog.setTitle("Add ToDo")
-//                        .setView(view)
-//                        .setIcon(R.drawable.note4)
-//                        .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialog, int which) {
-//                                String task = String.valueOf(text.getText());
-//                                SQLiteDatabase database = taskDBHelper.getWritableDatabase();
-//                                ContentValues values = new ContentValues();
-//                                if(task.isEmpty())
-//                                {
-//                                    values.put(TaskContract.TaskEntry.COL_TASK_TITLE, "No title");
-//                                }
-//                                else{
-//                                    values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-//                                }
-//                                database.insertWithOnConflict(TaskContract.TaskEntry.TABLE, null,
-//                                        values, SQLiteDatabase.CONFLICT_REPLACE);
-//                                database.close();
-//                                updateUI();
-//                            }
-//                        })
-//                        .setNegativeButton("Cancel", null)
-//                        .create();
-//                alartDialog.show();
-//
-//            }
-//        });
-//
-//        recordButton.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v)
-//            {
-//                actionMenu.close(true);
-//                Toast.makeText(getApplicationContext(), "Option3", Toast.LENGTH_SHORT).show();
-////                Intent intent = new Intent(MainActivity.this, AddNote.class);
-////                startActivity(intent);
-//            }
-//        });
-//
-//        imageButton.setOnClickListener(new View.OnClickListener(){
-//            @Override
-//            public void onClick(View v)
-//            {
-//                actionMenu.close(true);
-//                Toast.makeText(getApplicationContext(), "Option2", Toast.LENGTH_SHORT).show();
-////                Intent intent = new Intent(getApplication(), AddNote.class);
-////                startActivity(intent);
-//            }
-//        });
-//
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
     }
-
-//    public static void delete(NoteData data, Context context, int position)
-//    {
-//        Toast.makeText(context, "position "+position, Toast.LENGTH_SHORT).show();
-//        Toast.makeText(context, "name of position "+ list.get(position-1).gettitle(), Toast.LENGTH_SHORT).show();
-//        SQLiteDatabase database = taskDBHelper.getWritableDatabase();
-//        Toast.makeText(context,data.gettitle()+ " Finished position:"+ position, Toast.LENGTH_SHORT).show();
-//        database.execSQL("DELETE FROM " + TaskContract.TaskEntry.TABLE+ " WHERE "+TaskContract.TaskEntry.COL_TASK_TITLE+"='"+data.gettitle()+"'");
-//        Toast.makeText(context,"Deleted ", Toast.LENGTH_SHORT).show();
-//        list.remove(position);
-//        if(list.size()==0)
-//        {
-//            Toast.makeText(context, "excelent finished All tasks", Toast.LENGTH_SHORT).show();
-//        }
-//        database.close();
-////        done.add(data);
-////        boolean b = database.delete(TaskContract.TaskEntry.TABLE, TaskContract.TaskEntry.COL_TASK_TITLE
-////                +" = " + title , null) > 0;
-//    }
 
     public void updateCheckedList() {
         doneRecyclerView.setVisibility(View.INVISIBLE);
@@ -350,7 +231,6 @@ public class MainActivity extends AppCompatActivity
         }
     }
     public void updateUI() {
-//        list = new ArrayList<>();
         SQLiteDatabase database = taskDBHelper.getReadableDatabase();
         final String [] coloumns = {TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,
                 TaskContract.TaskEntry.COL_TASK_Priority, TaskContract.TaskEntry.COL_TASK_isDone};
@@ -381,78 +261,12 @@ public class MainActivity extends AppCompatActivity
             }
             cursor.close();
             database.close();
-
-//            if(adaptorTasks.getItemCount() == 0)
-//            {
-//                System.err.println("adaptor = 0");
-//                adaptorTasks = new RecyclerAdaptorTasks(context, list);
-//                recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
-//                recyclerView.setAdapter(adaptorTasks);
-//                runLayoutAnimation(recyclerView);
-//            }
-        }
+}
 
         else if (adaptorTasks.getItemCount() == 0)
         {
             Toast.makeText(context, "No tasks", Toast.LENGTH_SHORT).show();
         }
-
-//            recyclerView.getItemAnimator().setChangeDuration(4000);
-//
-//            ItemTouchHelper swipeToDismissTouchHelper = new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
-//                    ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
-//                @Override
-//                public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder,
-//                          RecyclerView.ViewHolder target) {
-//                    return true;
-//                }
-//
-//                @Override
-//                public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction)
-//                {
-//                    Toast.makeText(context, "ay 7agaa", Toast.LENGTH_SHORT).show();
-//                }
-//                @Override
-//                public void onChildDraw(Canvas c, RecyclerView recyclerView,
-//                                        RecyclerView.ViewHolder viewHolder, float dX, float dY,
-//                                        int actionState, boolean isCurrentlyActive) {
-//                    if (actionState == ItemTouchHelper.ACTION_STATE_SWIPE) {
-//                        // Get RecyclerView item from the ViewHolder
-//                        View itemView = viewHolder.itemView;
-//
-//                        Paint p = new Paint();
-//                        if (dX > 0) {
-//
-//            /* Set your color for positive displacement */
-//                            p.setARGB(255, 255, 0, 0);
-//                            // Draw Rect with varying right side, equal to displacement dX
-//                            c.drawRect((float) itemView.getLeft(), (float) itemView.getTop(), dX,
-//                                    (float) itemView.getBottom(), p);
-//                        } else {
-//            /* Set your color for negative displacement */
-//                            p.setARGB(255, 0, 255, 0);
-//
-//                            // Draw Rect with varying left side, equal to the item's right side plus negative displacement dX
-//                            c.drawRect((float) itemView.getRight() + dX, (float) itemView.getTop(),
-//                                    (float) itemView.getRight(), (float) itemView.getBottom(), p);
-//                        }
-//
-//                        super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-//                    }
-//                }
-//            });
-//            swipeToDismissTouchHelper.attachToRecyclerView(recyclerView);
-
-    }
-
-    private void runLayoutAnimation(final RecyclerView recyclerView) {
-        final Context context = recyclerView.getContext();
-        final LayoutAnimationController controller =
-                AnimationUtils.loadLayoutAnimation(context, R.anim.layout_animation_fall_down);
-
-        recyclerView.setLayoutAnimation(controller);
-        recyclerView.getAdapter().notifyDataSetChanged();
-        recyclerView.scheduleLayoutAnimation();
     }
 
     @Override
@@ -463,52 +277,5 @@ public class MainActivity extends AppCompatActivity
         } else {
             super.onBackPressed();
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
     }
 }

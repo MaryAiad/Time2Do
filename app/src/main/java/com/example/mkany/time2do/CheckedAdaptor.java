@@ -31,7 +31,7 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
     class ViewHolder extends RecyclerView.ViewHolder
     {
         public CheckBox checkBox;
-        public ImageButton imageButton, imageButton1;
+        public ImageButton imageButton;
         public LinearLayout linearLayout;
 
         public ViewHolder(View itemView) {
@@ -42,9 +42,7 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
         }
     }
 
-    public CheckedAdaptor()
-    {
-
+    public CheckedAdaptor() {
     }
 
     public void add(Context c ,NoteData done)
@@ -78,14 +76,13 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
         holder.imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 SQLiteDatabase database = MainActivity.taskDBHelper.getWritableDatabase();
                     database.execSQL("DELETE FROM " + TaskContract.TaskEntry.TABLE+ " WHERE "+
                             TaskContract.TaskEntry.COL_TASK_TITLE+"='" +doneList.get(position).gettitle()+"'");
                 database.close();
 
                 TranslateAnimation animation = new TranslateAnimation(holder.itemView.getWidth(), 0, 0, 0);
-                animation.setDuration(500);
+                animation.setDuration(400);
                 animation.setFillAfter(true);
                 animation.setAnimationListener(new Animation.AnimationListener() {
                     @Override
@@ -128,7 +125,6 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
                     MainActivity.checkedTasks.setVisibility(View.INVISIBLE);
                     MainActivity.line.setVisibility(View.INVISIBLE);
                 }
-
             }
         });
     }
