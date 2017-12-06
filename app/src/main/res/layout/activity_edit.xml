@@ -3,32 +3,28 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
-
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_margin="@dimen/small">
+    android:background="@color/white"
+    android:layout_margin="@dimen/medium_margin">
 
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/noteDescription"
-            android:hint="To Do"
+            android:hint="@string/to_do"
             style="@style/Widget.AppCompat.EditText"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_below="@id/noteDescription"
             android:layout_marginTop="@dimen/medium_margin"
             android:layout_marginBottom="@dimen/medium_margin">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Task Priority:"
+                android:text="@string/task_priority"
                 android:textSize="15sp"
                 android:layout_marginTop="7dp"
                 android:textColor="@color/black"
@@ -37,7 +33,7 @@
             <RadioGroup
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/small"
+                android:layout_marginStart="@dimen/small"
                 android:orientation="horizontal"
                 android:id="@+id/radio_group">
 
@@ -46,26 +42,25 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/radio_button3"
                     android:buttonTint="@color/grey"
-                    android:text="Low"
-                    android:textSize="10sp"/>
+                    android:text="@string/low"
+                    android:textSize="12sp" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/radio_button2"
                     android:buttonTint="@color/yellow"
-                    android:text="Normal"
-                    android:textSize="10sp"/>
+                    android:text="@string/normal"
+                    android:textSize="12sp" />
 
                 <RadioButton
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/radio_button1"
                     android:buttonTint="@color/red"
-                    android:text="High"
-                    android:textSize="10sp"/>
+                    android:text="@string/high"
+                    android:textSize="12sp" />
             </RadioGroup>
         </LinearLayout>
 
-    </LinearLayout>
 </RelativeLayout>

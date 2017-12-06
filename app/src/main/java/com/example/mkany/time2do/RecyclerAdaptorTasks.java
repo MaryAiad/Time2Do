@@ -1,6 +1,5 @@
 package com.example.mkany.time2do;
 
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.database.sqlite.SQLiteDatabase;
@@ -8,7 +7,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +20,6 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.mkany.time2do.DataBase.TaskContract;
@@ -37,7 +34,7 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
     private ArrayList<NoteData> tasks= new ArrayList<>();
     private ArrayList<NoteData> done = new ArrayList<>();
     private Context context;
-    private View v2;
+    private ViewGroup group;
     private EditText text;
     private RadioGroup radioGroup;
     private RadioButton normal, high, low;
@@ -78,8 +75,7 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
         View v = LayoutInflater.from(viewGroup.getContext())
                 .inflate(R.layout.activity_task_view, viewGroup, false);
 
-        v2 = LayoutInflater.from(viewGroup.getContext())
-                .inflate(R.layout.activity_edit, viewGroup, false);
+        this.group = viewGroup;
 
         v.setMinimumWidth(viewGroup.getMeasuredWidth());
         ViewHolder viewHolder = new ViewHolder(v);
@@ -87,7 +83,7 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final int position) {
+    public void onBindViewHolder(final ViewHolder viewHolder, int position) {
         final NoteData data = tasks.get(position);
         viewHolder.imageButton.setImageResource(R.drawable.ic_deleteblack);
         viewHolder.imageButton1.setImageResource(R.drawable.ic_edit);
@@ -95,7 +91,7 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
         viewHolder.textView.setTextColor(Color.BLACK);
         viewHolder.textView.setText(data.gettitle());
 
-        colorPart(viewHolder, data, position);
+        colorPart(viewHolder, data);
 
         viewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +99,7 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
 
                 SQLiteDatabase database = MainActivity.taskDBHelper.getWritableDatabase();
                 database.execSQL("DELETE FROM " + TaskContract.TaskEntry.TABLE+ " WHERE "+
-                                TaskContract.TaskEntry.COL_TASK_TITLE+"='" +tasks.get(position).gettitle()+"'");
+                        TaskContract.TaskEntry.COL_TASK_TITLE + "='" + tasks.get(viewHolder.getAdapterPosition()).gettitle() + "'");
                 database.close();
 
                 TranslateAnimation animation = new TranslateAnimation(0, viewHolder.itemView.getWidth(), 0, 0);
@@ -116,9 +112,9 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
 
                     @Override
                     public void onAnimationEnd(Animation animation) {
-                        tasks.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, tasks.size());
+                        tasks.remove(viewHolder.getAdapterPosition());
+                        notifyItemRemoved(viewHolder.getAdapterPosition());
+                        notifyItemRangeChanged(viewHolder.getAdapterPosition(), tasks.size());
                     }
 
                     @Override
@@ -132,6 +128,9 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
         viewHolder.imageButton1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                View v2 = LayoutInflater.from(group.getContext())
+                        .inflate(R.layout.activity_note, group, false);
+
                 AlertDialog.Builder alertDialog = new AlertDialog.Builder(viewHolder.itemView.getContext());
                 text = (EditText) v2.findViewById(R.id.noteDescription);
                 radioGroup = (RadioGroup) v2.findViewById(R.id.radio_group);
@@ -201,13 +200,17 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
                         data.setPriority(priority);
                         data.setDone(0);
 
-                        colorPart(viewHolder, data, position);
+                        colorPart(viewHolder, data);
 
                         viewHolder.textView.setText(data.gettitle());
-                        tasks.add(position, data);
-                        notifyItemInserted(position);
-                        tasks.remove(position+1);
-                        notifyItemRemoved(position);
+                        tasks.add(viewHolder.getAdapterPosition(), data);
+                        notifyItemInserted(viewHolder.getAdapterPosition());
+//                        if (viewHolder.getAdapterPosition() != tasks.size()-1){
+                        tasks.remove(viewHolder.getAdapterPosition());
+                        notifyItemRemoved(viewHolder.getAdapterPosition());
+                        Toast.makeText(context, data.gettitle() + " Edited", Toast.LENGTH_SHORT).show();
+//                        }
+
                     }
                 })
                         .setNegativeButton("Cancel", null)
@@ -239,13 +242,14 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
                         @Override
                         public void onAnimationEnd(Animation animation) {
                             done.add(data);
-                            tasks.remove(position);
-                            notifyItemRemoved(position);
-                            notifyItemRangeChanged(position, tasks.size());
+                            tasks.remove(viewHolder.getAdapterPosition());
+                            notifyItemRemoved(viewHolder.getAdapterPosition());
+                            notifyItemRangeChanged(viewHolder.getAdapterPosition(), tasks.size());
                             if(tasks.size()== 0)
                             {
                                 Toast.makeText(context, "Excelent Finished All Tasks", Toast.LENGTH_SHORT).show();
                             }
+
                             MainActivity.checkedAdaptor.add(context, data);
                             MainActivity.checkedTasks.setVisibility(View.VISIBLE);
                             MainActivity.line.setVisibility(View.VISIBLE);
@@ -267,7 +271,7 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
         });
     }
 
-    private void colorPart(ViewHolder viewHolder, NoteData data, int position) {
+    private void colorPart(ViewHolder viewHolder, NoteData data) {
         if (data.getPriority() == 1)
         {
             viewHolder.cardView.setCardBackgroundColor(Color.parseColor("#FFCDD2"));

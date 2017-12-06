@@ -10,18 +10,11 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.animation.AnimationUtils;
-import android.view.animation.LayoutAnimationController;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -34,16 +27,9 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.example.mkany.time2do.DataBase.TaskContract;
 import com.example.mkany.time2do.DataBase.TaskDBHelper;
-import com.podcopic.animationlib.library.AnimationType;
-import com.podcopic.animationlib.library.StartSmartAnimation;
-import com.podcopic.animationlib.library.sliders.SlideInLeft;
-import com.podcopic.animationlib.library.sliders.SlideInUp;
-
-import java.util.ArrayList;
 
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -51,14 +37,14 @@ public class MainActivity extends AppCompatActivity{
     private EditText text;
     private RadioGroup radioGroup;
     private RadioButton normal, high;
-    public RecyclerView recyclerView;
+    private RecyclerView recyclerView;
     public static RecyclerAdaptorTasks adaptorTasks = new RecyclerAdaptorTasks();
     public static CheckedAdaptor checkedAdaptor = new CheckedAdaptor();
-    public int priority = 3, count=0;
-    public static Context context ;
-    public static RecyclerView doneRecyclerView;
+    private int priority = 3, count = 0;
+    private Context context;
+    private RecyclerView doneRecyclerView;
     public static LinearLayout checkedTasks, line;
-    public ImageButton imageButton;
+    private ImageButton imageButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +127,7 @@ public class MainActivity extends AppCompatActivity{
             {
                 final AlertDialog.Builder alartDialog = new AlertDialog.Builder(MainActivity.this);
                 View view = getLayoutInflater().inflate(R.layout.activity_note, null);
+
                 text = (EditText) view.findViewById(R.id.noteDescription);
                 radioGroup = (RadioGroup) view.findViewById(R.id.radio_group);
                 normal = (RadioButton) view.findViewById(R.id.radio_button2);
@@ -199,7 +186,7 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
-    public void updateCheckedList() {
+    private void updateCheckedList() {
         doneRecyclerView.setVisibility(View.INVISIBLE);
         SQLiteDatabase database = taskDBHelper.getReadableDatabase();
         final String[] coloumns = {TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,
@@ -230,7 +217,8 @@ public class MainActivity extends AppCompatActivity{
             database.close();
         }
     }
-    public void updateUI() {
+
+    private void updateUI() {
         SQLiteDatabase database = taskDBHelper.getReadableDatabase();
         final String [] coloumns = {TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,
                 TaskContract.TaskEntry.COL_TASK_Priority, TaskContract.TaskEntry.COL_TASK_isDone};

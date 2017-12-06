@@ -3,7 +3,6 @@ package com.example.mkany.time2do.DataBase;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.widget.Toast;
 
 /**
  * Created by Mery on 7/25/2017.

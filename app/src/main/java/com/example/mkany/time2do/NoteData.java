@@ -8,9 +8,9 @@ import android.support.v7.app.AppCompatActivity;
 
 public class NoteData extends AppCompatActivity {
 
-    String title;
-    int isDone;
-    int priority;
+    private String title;
+    private int isDone;
+    private int priority;
 
     public void setTitle(String description) {
         this.title = description;

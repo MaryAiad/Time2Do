@@ -12,8 +12,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.mkany.time2do.DataBase.TaskContract;
 
@@ -25,8 +23,8 @@ import java.util.ArrayList;
 
 public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHolder>{
 
-    public ArrayList<NoteData> doneList =new ArrayList<>();
-    public Context context;
+    private ArrayList<NoteData> doneList = new ArrayList<>();
+    private Context context;
 
     class ViewHolder extends RecyclerView.ViewHolder
     {
@@ -64,7 +62,7 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         MainActivity.checkedTasks.setVisibility(View.VISIBLE);
         MainActivity.line.setVisibility(View.VISIBLE);
 
@@ -78,7 +76,7 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
             public void onClick(View v) {
                 SQLiteDatabase database = MainActivity.taskDBHelper.getWritableDatabase();
                     database.execSQL("DELETE FROM " + TaskContract.TaskEntry.TABLE+ " WHERE "+
-                            TaskContract.TaskEntry.COL_TASK_TITLE+"='" +doneList.get(position).gettitle()+"'");
+                            TaskContract.TaskEntry.COL_TASK_TITLE + "='" + doneList.get(holder.getAdapterPosition()).gettitle() + "'");
                 database.close();
 
                 TranslateAnimation animation = new TranslateAnimation(holder.itemView.getWidth(), 0, 0, 0);
@@ -90,9 +88,9 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
                         }
                     @Override
                     public void onAnimationEnd(Animation animation) {
-                        doneList.remove(position);
-                        notifyItemRemoved(position);
-                        notifyItemRangeChanged(position, doneList.size());
+                        doneList.remove(holder.getAdapterPosition());
+                        notifyItemRemoved(holder.getAdapterPosition());
+                        notifyItemRangeChanged(holder.getAdapterPosition(), doneList.size());
                         if(doneList.size() == 0)
                         {
                             MainActivity.checkedTasks.setVisibility(View.INVISIBLE);
@@ -117,9 +115,9 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
                 database.close();
                 holder.checkBox.setChecked(false);
                 holder.checkBox.setPaintFlags(0);
-                doneList.remove(position);
-                notifyItemRemoved(position);
-                notifyItemRangeChanged(position, doneList.size());
+                doneList.remove(holder.getAdapterPosition());
+                notifyItemRemoved(holder.getAdapterPosition());
+                notifyItemRangeChanged(holder.getAdapterPosition(), doneList.size());
                 if(doneList.size() == 0)
                 {
                     MainActivity.checkedTasks.setVisibility(View.INVISIBLE);
