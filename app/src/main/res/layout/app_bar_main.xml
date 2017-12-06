@@ -50,9 +50,8 @@
                 android:textSize="25sp"
                 android:textStyle="italic|bold"
                 android:duplicateParentState="true"
-                android:layout_marginTop="5dp"
-                android:layout_marginStart="@dimen/small"
-                />
+                android:layout_marginTop="6dp"
+                android:layout_marginStart="@dimen/small" />
 
         </LinearLayout>
 
