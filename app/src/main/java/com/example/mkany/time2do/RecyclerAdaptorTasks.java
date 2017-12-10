@@ -46,7 +46,7 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
         public CheckBox check;
         public CardView cardView ;
         public LinearLayout linearLayout;
-        public ImageButton imageButton, imageButton1;
+        public ImageButton delete, edit;
         public TextView textView;
 
         public ViewHolder(View itemView) {
@@ -54,18 +54,19 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
             check = (CheckBox) itemView.findViewById(R.id.task_title);
             cardView = (CardView) itemView.findViewById(R.id.task_view);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.coloredPart);
-            imageButton = (ImageButton) itemView.findViewById(R.id.delete);
-            imageButton1 = (ImageButton) itemView.findViewById(R.id.edit);
+            delete = (ImageButton) itemView.findViewById(R.id.delete);
+            edit = (ImageButton) itemView.findViewById(R.id.edit);
             textView = (TextView) itemView.findViewById(R.id.task_name);
         }
     }
 
-    public RecyclerAdaptorTasks() {
+    public RecyclerAdaptorTasks(Context c, ArrayList<NoteData> n) {
+        this.context = c;
+        this.tasks = n;
     }
 
-    public void add (Context c,NoteData n)
+    public void add(NoteData n)
     {
-        this.context = c;
         tasks.add(n);
         notifyItemInserted(tasks.size()-1);
     }
@@ -85,19 +86,24 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
     @Override
     public void onBindViewHolder(final ViewHolder viewHolder, int position) {
         final NoteData data = tasks.get(position);
-        viewHolder.imageButton.setImageResource(R.drawable.ic_deleteblack);
-        viewHolder.imageButton1.setImageResource(R.drawable.ic_edit);
+        viewHolder.delete.setImageResource(R.drawable.ic_deleteblack);
+        viewHolder.edit.setImageResource(R.drawable.ic_edit);
         viewHolder.check.setChecked(false);
         viewHolder.textView.setTextColor(Color.BLACK);
         viewHolder.textView.setText(data.gettitle());
 
         colorPart(viewHolder, data);
 
-        viewHolder.imageButton.setOnClickListener(new View.OnClickListener() {
+        viewHolder.delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View v) {
+                SQLiteDatabase database = null;
+                if (context instanceof MainActivity) {
+                    System.err.println("imageButton click instance ");
+                    database = ((MainActivity) context).taskDBHelper.getWritableDatabase();
+                }
+                System.err.println("imageButton click not instance ");
 
-                SQLiteDatabase database = MainActivity.taskDBHelper.getWritableDatabase();
                 database.execSQL("DELETE FROM " + TaskContract.TaskEntry.TABLE+ " WHERE "+
                         TaskContract.TaskEntry.COL_TASK_TITLE + "='" + tasks.get(viewHolder.getAdapterPosition()).gettitle() + "'");
                 database.close();
@@ -125,7 +131,7 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
             }
         });
 
-        viewHolder.imageButton1.setOnClickListener(new View.OnClickListener() {
+        viewHolder.edit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 View v2 = LayoutInflater.from(group.getContext())
@@ -177,7 +183,11 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String task = String.valueOf(text.getText());
-                        SQLiteDatabase database = MainActivity.taskDBHelper.getWritableDatabase();
+
+                        SQLiteDatabase database = null;
+                        if (context instanceof MainActivity) {
+                            database = ((MainActivity) context).taskDBHelper.getWritableDatabase();
+                        }
 
                         String query;
                         if(task.isEmpty())
@@ -205,11 +215,9 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
                         viewHolder.textView.setText(data.gettitle());
                         tasks.add(viewHolder.getAdapterPosition(), data);
                         notifyItemInserted(viewHolder.getAdapterPosition());
-//                        if (viewHolder.getAdapterPosition() != tasks.size()-1){
                         tasks.remove(viewHolder.getAdapterPosition());
                         notifyItemRemoved(viewHolder.getAdapterPosition());
                         Toast.makeText(context, data.gettitle() + " Edited", Toast.LENGTH_SHORT).show();
-//                        }
 
                     }
                 })
@@ -233,10 +241,14 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
                     animation1.setAnimationListener(new Animation.AnimationListener() {
                         @Override
                         public void onAnimationStart(Animation animation) {
-                            SQLiteDatabase database = MainActivity.taskDBHelper.getWritableDatabase();
-                            database.execSQL("update "+ TaskContract.TaskEntry.TABLE + " set "+ TaskContract.TaskEntry.COL_TASK_isDone+
-                                    " = 1 where "+TaskContract.TaskEntry.COL_TASK_TITLE + "= '"+data.gettitle()+"' ;");
-                            database.close();
+                            if (context instanceof MainActivity) {
+                                SQLiteDatabase database = ((MainActivity) context).taskDBHelper.getWritableDatabase();
+                                database.execSQL("update " + TaskContract.TaskEntry.TABLE + " set " + TaskContract.TaskEntry.COL_TASK_isDone +
+                                        " = 1 where " + TaskContract.TaskEntry.COL_TASK_TITLE + "= '" + data.gettitle() + "' ;");
+                                database.close();
+                            } else {
+                                Toast.makeText(context, "Not instance ", Toast.LENGTH_SHORT).show();
+                            }
                         }
 
                         @Override
@@ -249,10 +261,11 @@ public class RecyclerAdaptorTasks extends RecyclerView.Adapter<RecyclerAdaptorTa
                             {
                                 Toast.makeText(context, "Excelent Finished All Tasks", Toast.LENGTH_SHORT).show();
                             }
-
-                            MainActivity.checkedAdaptor.add(context, data);
-                            MainActivity.checkedTasks.setVisibility(View.VISIBLE);
-                            MainActivity.line.setVisibility(View.VISIBLE);
+                            if (context instanceof MainActivity) {
+                                ((MainActivity) context).checkedAdaptor.add(data);
+                                ((MainActivity) context).checkedTasks.setVisibility(View.VISIBLE);
+                                ((MainActivity) context).line.setVisibility(View.VISIBLE);
+                            }
                         }
 
                         @Override

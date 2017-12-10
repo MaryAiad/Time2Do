@@ -40,14 +40,17 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
         }
     }
 
-    public CheckedAdaptor() {
+    public CheckedAdaptor(Context context, ArrayList<NoteData> list) {
+        this.context = context;
+        this.doneList = list;
     }
 
-    public void add(Context c ,NoteData done)
+    public void add(NoteData done)
     {
-        MainActivity.checkedTasks.setVisibility(View.VISIBLE);
-        MainActivity.line.setVisibility(View.VISIBLE);
-        this.context = c;
+        if (context instanceof MainActivity) {
+            ((MainActivity) context).checkedTasks.setVisibility(View.VISIBLE);
+            ((MainActivity) context).line.setVisibility(View.VISIBLE);
+        }
         this.doneList.add(done);
         notifyItemInserted(doneList.size()-1);
     }
@@ -63,8 +66,10 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        MainActivity.checkedTasks.setVisibility(View.VISIBLE);
-        MainActivity.line.setVisibility(View.VISIBLE);
+        if (context instanceof MainActivity) {
+            ((MainActivity) context).checkedTasks.setVisibility(View.VISIBLE);
+            ((MainActivity) context).line.setVisibility(View.VISIBLE);
+        }
 
         final NoteData noteData = doneList.get(position);
         holder.checkBox.setText(noteData.gettitle());
@@ -74,7 +79,8 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
         holder.imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SQLiteDatabase database = MainActivity.taskDBHelper.getWritableDatabase();
+
+                SQLiteDatabase database = ((MainActivity) context).taskDBHelper.getWritableDatabase();
                     database.execSQL("DELETE FROM " + TaskContract.TaskEntry.TABLE+ " WHERE "+
                             TaskContract.TaskEntry.COL_TASK_TITLE + "='" + doneList.get(holder.getAdapterPosition()).gettitle() + "'");
                 database.close();
@@ -93,8 +99,10 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
                         notifyItemRangeChanged(holder.getAdapterPosition(), doneList.size());
                         if(doneList.size() == 0)
                         {
-                            MainActivity.checkedTasks.setVisibility(View.INVISIBLE);
-                            MainActivity.line.setVisibility(View.INVISIBLE);
+                            if (context instanceof MainActivity) {
+                                ((MainActivity) context).checkedTasks.setVisibility(View.INVISIBLE);
+                                ((MainActivity) context).line.setVisibility(View.INVISIBLE);
+                            }
                         }
                     }
                     @Override
@@ -108,8 +116,11 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
         holder.checkBox.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MainActivity.adaptorTasks.add(context, noteData);
-                SQLiteDatabase database = MainActivity.taskDBHelper.getWritableDatabase();
+                SQLiteDatabase database = null;
+                if (context instanceof MainActivity) {
+                    ((MainActivity) context).adaptorTasks.add(noteData);
+                    database = ((MainActivity) context).taskDBHelper.getWritableDatabase();
+                }
                 database.execSQL("update "+ TaskContract.TaskEntry.TABLE + " set "+ TaskContract.TaskEntry.COL_TASK_isDone+
                         " = 0 where "+TaskContract.TaskEntry.COL_TASK_TITLE + "= '"+noteData.gettitle()+"' ;");
                 database.close();
@@ -120,8 +131,10 @@ public class CheckedAdaptor extends RecyclerView.Adapter<CheckedAdaptor.ViewHold
                 notifyItemRangeChanged(holder.getAdapterPosition(), doneList.size());
                 if(doneList.size() == 0)
                 {
-                    MainActivity.checkedTasks.setVisibility(View.INVISIBLE);
-                    MainActivity.line.setVisibility(View.INVISIBLE);
+                    if (context instanceof MainActivity) {
+                        ((MainActivity) context).checkedTasks.setVisibility(View.INVISIBLE);
+                        ((MainActivity) context).line.setVisibility(View.INVISIBLE);
+                    }
                 }
             }
         });

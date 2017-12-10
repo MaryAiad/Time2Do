@@ -28,23 +28,26 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import com.example.mkany.time2do.DataBase.TaskContract;
 import com.example.mkany.time2do.DataBase.TaskDBHelper;
 
+import java.util.ArrayList;
+
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator;
 import jp.wasabeef.recyclerview.animators.SlideInRightAnimator;
 
 public class MainActivity extends AppCompatActivity{
 
-    public static TaskDBHelper taskDBHelper ;
+    public TaskDBHelper taskDBHelper;
     private EditText text;
     private RadioGroup radioGroup;
     private RadioButton normal, high;
     private RecyclerView recyclerView;
-    public static RecyclerAdaptorTasks adaptorTasks = new RecyclerAdaptorTasks();
-    public static CheckedAdaptor checkedAdaptor = new CheckedAdaptor();
+    public RecyclerAdaptorTasks adaptorTasks;
+    public CheckedAdaptor checkedAdaptor;
     private int priority = 3, count = 0;
     private Context context;
     private RecyclerView doneRecyclerView;
-    public static LinearLayout checkedTasks, line;
+    public LinearLayout checkedTasks, line;
     private ImageButton imageButton;
+    private ArrayList<NoteData> doneList, tasks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,18 +63,10 @@ public class MainActivity extends AppCompatActivity{
         imageButton = (ImageButton) findViewById(R.id.upArrow);
         line = (LinearLayout) findViewById(R.id.line);
 
-        adaptorTasks = new RecyclerAdaptorTasks();
-        recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(adaptorTasks);
-
         SlideInRightAnimator slideInUpAnimator = new SlideInRightAnimator(new OvershootInterpolator(1f));
         recyclerView.setItemAnimator(slideInUpAnimator);
         slideInUpAnimator.setAddDuration(1000);
 //        runLayoutAnimation(recyclerView);
-
-        checkedAdaptor = new CheckedAdaptor();
-        doneRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
-        doneRecyclerView.setAdapter(checkedAdaptor);
 
         SlideInLeftAnimator slideInLeftAnimator = new SlideInLeftAnimator(new OvershootInterpolator(1f));
         doneRecyclerView.setItemAnimator(slideInLeftAnimator);
@@ -81,8 +76,16 @@ public class MainActivity extends AppCompatActivity{
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        updateCheckedList();
         updateUI();
+
+        adaptorTasks = new RecyclerAdaptorTasks(this, tasks);
+        recyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setAdapter(adaptorTasks);
+
+        checkedAdaptor = new CheckedAdaptor(this, doneList);
+        doneRecyclerView.setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false));
+        doneRecyclerView.setAdapter(checkedAdaptor);
+
 
         doneRecyclerView.setVisibility(View.VISIBLE);
         imageButton.setOnClickListener(new View.OnClickListener() {
@@ -175,7 +178,7 @@ public class MainActivity extends AppCompatActivity{
                         database.insertWithOnConflict(TaskContract.TaskEntry.TABLE, null,
                                 values, SQLiteDatabase.CONFLICT_REPLACE);
                         database.close();
-                        adaptorTasks.add(context, data);
+                        adaptorTasks.add(data);
                     }
                 })
                         .setNegativeButton("Cancel", null)
@@ -186,39 +189,11 @@ public class MainActivity extends AppCompatActivity{
         });
     }
 
-    private void updateCheckedList() {
-        doneRecyclerView.setVisibility(View.INVISIBLE);
-        SQLiteDatabase database = taskDBHelper.getReadableDatabase();
-        final String[] coloumns = {TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,
-                TaskContract.TaskEntry.COL_TASK_Priority, TaskContract.TaskEntry.COL_TASK_isDone};
-
-        Cursor cursor = database.query(TaskContract.TaskEntry.TABLE, coloumns,
-                null, null, null, null, null);
-        cursor.moveToFirst();
-        if (cursor.moveToFirst()) {
-            NoteData task = new NoteData();
-            task.setTitle(cursor.getString(1));
-            task.setPriority(cursor.getInt(2));
-            task.setDone(cursor.getInt(3));
-            if (task.getDone() == 1) {
-                checkedAdaptor.add(context, task);
-            }
-
-            while (cursor.moveToNext()) {
-                NoteData note = new NoteData();
-                note.setTitle(cursor.getString(1));
-                note.setPriority(cursor.getInt(2));
-                note.setDone(cursor.getInt(3));
-                if (note.getDone() == 1) {
-                    checkedAdaptor.add(context, note);
-                }
-            }
-            cursor.close();
-            database.close();
-        }
-    }
-
     private void updateUI() {
+        tasks = new ArrayList<>();
+        doneList = new ArrayList<>();
+        doneRecyclerView.setVisibility(View.INVISIBLE);
+
         SQLiteDatabase database = taskDBHelper.getReadableDatabase();
         final String [] coloumns = {TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE,
                 TaskContract.TaskEntry.COL_TASK_Priority, TaskContract.TaskEntry.COL_TASK_isDone};
@@ -234,7 +209,9 @@ public class MainActivity extends AppCompatActivity{
             task.setDone(cursor.getInt(3));
             if(task.getDone() == 0)
             {
-                adaptorTasks.add(context,task);
+                tasks.add(task);
+            } else if (task.getDone() == 1) {
+                doneList.add(task);
             }
 
             while (cursor.moveToNext()) {
@@ -244,12 +221,14 @@ public class MainActivity extends AppCompatActivity{
                 note.setDone(cursor.getInt(3));
                 if(note.getDone() == 0)
                 {
-                    adaptorTasks.add(context,note);
+                    tasks.add(note);
+                } else if (note.getDone() == 1) {
+                    doneList.add(note);
                 }
             }
             cursor.close();
             database.close();
-}
+        }
 
         else if (adaptorTasks.getItemCount() == 0)
         {
